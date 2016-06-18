@@ -29,12 +29,12 @@ In your *build.gradle* you can set the conversion options settings. See: https:/
 .build.gradle
 ----
 assets {
-	configOptions = [
-		asciidoctor : [
-			header_footer: true,
-			template_dirs: [ '/my/path/templates/' ],
-			attributes: [ icons: 'fonts' ]
-		]
-	]
+    configOptions = [
+        asciidoctor : [
+            header_footer: true,
+            template_dirs: [ '/my/path/templates/' ],
+            attributes: [ icons: 'fonts' ]
+        ]
+    ]
 }
 ----
