@@ -12,12 +12,23 @@ File with the extension .adoc (preferred), .ad, .asciidoc or .asc will be conver
 [source,groovy,subs='attributes']
 .build.gradle
 ----
-plugins {
-    id 'com.bertramlabs.asset-pipeline' version '{apVersion}'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:${assetPipelineVersion}"
+    }
+}
+
+apply plugin: 'com.bertramlabs.asset-pipeline'
+
+repositories {
+    jcenter()
 }
 
 dependencies {
-    assets 'com.craigburke.angular:angular-annotate-asset-pipeline:{version}'
+    assets 'com.craigburke:asciidoctor-asset-pipeline:{version}'
 }
 ----
 
