@@ -1,5 +1,5 @@
 :version: 1.0.0
-:apVersion: 2.5.0
+:apVersion: 2.9.0
 = AsciiDoctor Asset-Pipeline
 
 The `asciidoctor-asset-pipeline` is an https://github.com/bertramdev/asset-pipeline-core[Asset Pipeline] module makes use of https://github.com/asciidoctor/asciidoctorj[AsciiDoctorJ] and allows for AsciiDoctor documents to be converted to HTML.
@@ -17,7 +17,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:${assetPipelineVersion}"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:{apVersion}"
     }
 }
 
