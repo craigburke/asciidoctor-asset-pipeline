@@ -1,0 +1,40 @@
+:version: 1.0.0
+:apVersion: 2.5.0
+= AsciiDoctor Asset-Pipeline
+
+The `asciidoctor-asset-pipeline` is an https://github.com/bertramdev/asset-pipeline-core[Asset Pipeline] module makes use of https://github.com/asciidoctor/asciidoctorj[AsciiDoctorJ] and allows for AsciiDoctor documents to be converted to HTML.
+File with the extension .adoc (preferred), .ad, .asciidoc or .asc will be converted to HTML.
+
+== Getting started
+
+=== Gradle / Grails 3
+
+[source,groovy,subs='attributes']
+.build.gradle
+----
+plugins {
+    id 'com.bertramlabs.asset-pipeline' version '{apVersion}'
+}
+
+dependencies {
+    assets 'com.craigburke.angular:angular-annotate-asset-pipeline:{version}'
+}
+----
+
+== Configuration
+
+In your *build.gradle* you can set the conversion options settings. See: https://github.com/asciidoctor/asciidoctorj#conversion-options[AsciiDoctor Conversion Options]
+
+[source,groovy]
+.build.gradle
+----
+assets {
+	configOptions = [
+		asciidoctor : [
+		    header_footer: true,
+            template_dirs: [ '/my/path/templates/' ],
+            attributes: [ icons: 'fonts' ]
+		]
+	]
+}
+----
