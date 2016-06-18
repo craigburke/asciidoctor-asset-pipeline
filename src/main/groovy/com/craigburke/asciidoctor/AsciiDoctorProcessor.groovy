@@ -12,6 +12,7 @@ import org.asciidoctor.Asciidoctor
 class AsciiDoctorProcessor extends AbstractProcessor {
 
     private Asciidoctor asciidoctor
+    static ThreadLocal currentAsset = new ThreadLocal()
 
     AsciiDoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
@@ -21,17 +22,12 @@ class AsciiDoctorProcessor extends AbstractProcessor {
     }
 
     String process(String input, AssetFile assetFile) {
+        currentAsset.set(assetFile.path)
         asciidoctor.convert(input, options)
     }
 
     static HashMap<String, Object> getOptions() {
-        Map config = AssetPipelineConfigHolder.config?.asciidoctor ?: [:]
-        if (config?.template_dirs instanceof List) {
-            config.template_dirs = config.template_dirs.collect { String path ->
-                path.startsWith('/') ? path : "${config.ass}"
-                String
-            }
-        }
+        AssetPipelineConfigHolder.config?.asciidoctor ?: [:]
     }
 
 }
