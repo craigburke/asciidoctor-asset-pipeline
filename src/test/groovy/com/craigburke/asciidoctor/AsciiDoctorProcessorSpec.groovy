@@ -23,7 +23,10 @@ class AsciiDoctorProcessorSpec extends Specification {
         asciidoctorConfig = [:]
     }
 
-    def "Document doesn't render h1 element by default"() {
+    def "Document doesn't render h1 element when header_footer is false"() {
+        setup:
+        asciidoctorConfig = [header_footer: false]
+
         when:
         String result = convertToHtml(input)
         Document document = Jsoup.parseBodyFragment(result)
@@ -103,7 +106,7 @@ class AsciiDoctorProcessorSpec extends Specification {
         String result = convertToHtml(input)
         Document document = Jsoup.parseBodyFragment(result)
 
-        Element list = document.select('body > div.ulist > ul').first()
+        Element list = document.select('body div.ulist > ul').first()
         Element item1 = list.child(0)
         Element item2 = list.child(1)
 
@@ -148,7 +151,7 @@ class AsciiDoctorProcessorSpec extends Specification {
         String result = processor.process(input, assetFile)
         Document document = Jsoup.parseBodyFragment(result)
 
-        Element list = document.select('body > div.olist > ol').first()
+        Element list = document.select('body div.olist > ol').first()
         Element item1 = list.child(0)
         Element item2 = list.child(1)
 

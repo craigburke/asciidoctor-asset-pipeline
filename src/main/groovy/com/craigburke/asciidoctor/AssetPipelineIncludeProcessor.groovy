@@ -18,7 +18,7 @@ class AssetPipelineIncludeProcessor extends IncludeProcessor {
 
     @Override
     void process(DocumentRuby document, PreprocessorReader reader, String target, Map<String, Object> attributes) {
-        String sourceFile = AsciiDoctorProcessor.currentAsset.get().toString()
+        String sourceFile = AsciiDoctorProcessor.currentAssetPath
         AssetFile includeFile = AssetHelper.fileForUri(target)
         if (includeFile) {
             CacheManager.addCacheDependency(sourceFile, includeFile)

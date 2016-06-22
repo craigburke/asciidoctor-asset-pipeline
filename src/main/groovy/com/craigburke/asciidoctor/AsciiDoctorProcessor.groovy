@@ -12,22 +12,32 @@ import org.asciidoctor.Asciidoctor
 class AsciiDoctorProcessor extends AbstractProcessor {
 
     private Asciidoctor asciidoctor
-    static ThreadLocal currentAsset = new ThreadLocal()
+    private static ThreadLocal currentAsset = new ThreadLocal()
 
     AsciiDoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
         asciidoctor = create()
+        asciidoctor.requireLibrary('asciidoctor-diagram')
         JavaExtensionRegistry extensionRegistry = asciidoctor.javaExtensionRegistry()
         extensionRegistry.includeProcessor(AssetPipelineIncludeProcessor)
     }
 
     String process(String input, AssetFile assetFile) {
         currentAsset.set(assetFile.path)
-        asciidoctor.convert(input, options)
+        asciidoctor.convert(input, convertOptions)
     }
 
-    static HashMap<String, Object> getOptions() {
-        AssetPipelineConfigHolder.config?.asciidoctor ?: [:]
+    static String getCurrentAssetPath() {
+        currentAsset.get().toString()
+    }
+
+    static Map getConfig() {
+        (AssetPipelineConfigHolder.config?.asciidoctor ?: [:]).asImmutable()
+    }
+
+    static Map<String, Object> getConvertOptions() {
+        Map options = [header_footer : true ] + config
+        options.asImmutable()
     }
 
 }
