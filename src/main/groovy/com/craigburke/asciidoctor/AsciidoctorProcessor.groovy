@@ -9,12 +9,12 @@ import asset.pipeline.AssetCompiler
 import asset.pipeline.AssetFile
 import org.asciidoctor.Asciidoctor
 
-class AsciiDoctorProcessor extends AbstractProcessor {
+class AsciidoctorProcessor extends AbstractProcessor {
 
     private Asciidoctor asciidoctor
     private static ThreadLocal currentAsset = new ThreadLocal()
 
-    AsciiDoctorProcessor(AssetCompiler precompiler) {
+    AsciidoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
         asciidoctor = create()
         asciidoctor.requireLibrary('asciidoctor-diagram')

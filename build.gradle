@@ -61,7 +61,7 @@ publishing {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
                     name 'asciidoctor-asset-pipeline'
-                    description 'AsciiDoctor extension for the Asset Pipeline Library.'
+                    description 'Asciidoctor extension for the Asset Pipeline Library.'
                     url 'https://github.com/craigburke/asciidoctor-asset-pipeline'
                     scm {
                         url 'https://github.com/craigburke/asciidoctor-asset-pipeline'
