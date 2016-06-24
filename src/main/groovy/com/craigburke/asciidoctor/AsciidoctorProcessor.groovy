@@ -17,7 +17,8 @@ class AsciidoctorProcessor extends AbstractProcessor {
 
     AsciidoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
-        asciidoctor = create(gemPath)
+        String gemPath = getGemPath()
+        asciidoctor = gemPath ? create(gemPath) : create()
         if (config.requires) {
             asciidoctor.requireLibraries(config.requires as List<String>)
         }
