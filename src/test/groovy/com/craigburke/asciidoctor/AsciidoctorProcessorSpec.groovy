@@ -11,13 +11,13 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
-class AsciiDoctorProcessorSpec extends Specification {
+class AsciidoctorProcessorSpec extends Specification {
 
     @Shared
     AssetFile assetFile = new GenericAssetFile()
 
     @Subject
-    AsciiDoctorProcessor processor = new AsciiDoctorProcessor(null)
+    AsciidoctorProcessor processor = new AsciidoctorProcessor(null)
 
     def setup() {
         asciidoctorConfig = [:]

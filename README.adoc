@@ -1,8 +1,8 @@
 :version: 1.0.0
 :apVersion: 2.9.0
-= AsciiDoctor Asset-Pipeline
+= Asciidoctor Asset-Pipeline
 
-The `asciidoctor-asset-pipeline` is an https://github.com/bertramdev/asset-pipeline-core[Asset Pipeline] module makes use of https://github.com/asciidoctor/asciidoctorj[AsciiDoctorJ] and allows for AsciiDoctor documents to be converted to HTML.
+The `asciidoctor-asset-pipeline` is an https://github.com/bertramdev/asset-pipeline-core[Asset Pipeline] module makes use of https://github.com/asciidoctor/asciidoctorj[AsciidoctorJ] and allows for AsciiDoc documents to be converted to HTML.
 File with the extension .adoc (preferred), .ad, .asciidoc or .asc will be converted to HTML.
 
 == Getting started
@@ -34,7 +34,7 @@ dependencies {
 
 == Configuration
 
-In your *build.gradle* you can set the conversion options settings. See: https://github.com/asciidoctor/asciidoctorj#conversion-options[AsciiDoctor Conversion Options]
+In your *build.gradle* you can set the conversion options settings. See: https://github.com/asciidoctor/asciidoctorj#conversion-options[Asciidoctor Conversion Options]
 
 [source,groovy]
 .build.gradle
