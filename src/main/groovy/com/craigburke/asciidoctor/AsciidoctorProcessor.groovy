@@ -8,6 +8,7 @@ import asset.pipeline.AbstractProcessor
 import asset.pipeline.AssetCompiler
 import asset.pipeline.AssetFile
 import org.asciidoctor.Asciidoctor
+import org.asciidoctor.SafeMode
 
 class AsciidoctorProcessor extends AbstractProcessor {
 
@@ -36,8 +37,29 @@ class AsciidoctorProcessor extends AbstractProcessor {
     }
 
     static Map<String, Object> getConvertOptions() {
-        Map options = [header_footer : true ] + config
+        Map options = config.collectEntries { key, val ->
+            [(key.replaceAll(/[A-Z]/) { '_' + it[0].toLowerCase() }): val]
+        }
+        if (options.containsKey('embeddable')) {
+            options.header_footer = !options.remove('embeddable')
+        }
+        else if (!options.containsKey('header_footer')) {
+            options.header_footer = true
+        }
+        options.safe = resolveSafeModeLevel(options.safe)
         options.asImmutable()
     }
 
+    static int resolveSafeModeLevel(Object safe) {
+        if (safe == null) 0
+        else if (safe instanceof Integer) safe
+        else {
+            try {
+                Enum.valueOf(SafeMode, safe.toString().toUpperCase()).level
+            }
+            catch (IllegalArgumentException e) {
+                0
+            }
+        }
+    }
 }

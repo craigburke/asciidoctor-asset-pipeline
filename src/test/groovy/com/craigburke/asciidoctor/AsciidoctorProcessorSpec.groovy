@@ -23,35 +23,58 @@ class AsciidoctorProcessorSpec extends Specification {
         asciidoctorConfig = [:]
     }
 
-    def "Document doesn't render h1 element when header_footer is false"() {
+    def "Document doesn't render body element when embeddable is true"() {
         setup:
-        asciidoctorConfig = [header_footer: false]
+        asciidoctorConfig = [embeddable: true]
 
         when:
         String result = convertToHtml(input)
-        Document document = Jsoup.parseBodyFragment(result)
 
         then:
-        !document.select('h1')
+        result.startsWith('<div class="paragraph">')
 
         where:
-        input = '= Heading'
+        input = '''\
+        = Heading
+        
+        Lorem ipsum.'''.stripIndent()
     }
 
 
-    def "Document renders h1 element when header_footer is enabled"() {
+    def "Document renders body element when embeddable is false"() {
+        when:
+        String result = convertToHtml(input)
+        Document document = Jsoup.parseBodyFragment(result)
+
+        then:
+        result.startsWith('<!DOCTYPE html>')
+        document.select('#header')
+        document.select('#content')
+        document.select('#footer')
+        document.select('h1').text() == 'Heading'
+
+        where:
+        input = '''\
+        = Heading
+        :!stylesheet:
+
+        Lorem ipsum.'''.stripIndent()
+    }
+
+
+    def "Sets safe mode specified by name"() {
         setup:
-        asciidoctorConfig = [header_footer: true]
+        asciidoctorConfig = [safe: 'server']
 
         when:
         String result = convertToHtml(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         then:
-        document.select('h1').text() == 'Heading'
+        document.select('p').text() == 'server'
 
         where:
-        input = '= Heading'
+        input = '{safe-mode-name}'
     }
 
 
@@ -137,13 +160,12 @@ class AsciidoctorProcessorSpec extends Specification {
         item2_1Sublist.child(0).text() == "Item 2.1.1"
 
         where:
-        input = """
+        input = '''\
         * Item 1
         ** Item 1.1
         * Item 2
         ** Item 2.1
-        *** Item 2.1.1
-        """
+        *** Item 2.1.1'''.stripIndent()
     }
 
     def "Renders ordered lists correctly"() {
@@ -182,13 +204,12 @@ class AsciidoctorProcessorSpec extends Specification {
         item2_1Sublist.child(0).text() == "Item 2.1.1"
 
         where:
-        input = """
+        input = '''\
         . Item 1
         .. Item 1.1
         . Item 2
         .. Item 2.1
-        ... Item 2.1.1
-        """
+        ... Item 2.1.1'''.stripIndent()
      }
 
     def "Renders tables correctly"() {
@@ -214,16 +235,12 @@ class AsciidoctorProcessorSpec extends Specification {
         row3.child(1).text() == 'COL2-3'
 
         where:
-        input = """|===
-
-            | COL1-1 | COL2-1
-
-            | COL1-2 | COL2-2
-
-            | COL1-3 | COL2-3
-
-            |===
-        """
+        input = '''\
+        |===
+        | COL1-1 | COL2-1
+        | COL1-2 | COL2-2
+        | COL1-3 | COL2-3
+        |==='''.stripIndent()
     }
 
     private String convertToHtml(String input) {
