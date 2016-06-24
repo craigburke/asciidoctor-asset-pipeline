@@ -16,7 +16,7 @@ class AsciiDoctorProcessor extends AbstractProcessor {
 
     AsciiDoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
-        asciidoctor = create()
+        asciidoctor = create(gemPath as String)
         asciidoctor.requireLibrary('asciidoctor-diagram')
         JavaExtensionRegistry extensionRegistry = asciidoctor.javaExtensionRegistry()
         extensionRegistry.includeProcessor(AssetPipelineIncludeProcessor)
@@ -33,6 +33,22 @@ class AsciiDoctorProcessor extends AbstractProcessor {
 
     static Map getConfig() {
         (AssetPipelineConfigHolder.config?.asciidoctor ?: [:]).asImmutable()
+    }
+
+    static String getGemPath() {
+        def paths = []
+        def config = getConfig()
+        def gemPath = config.gemPath
+        if (gemPath) {
+            paths.add(gemPath)
+        }
+        else {
+            def gemPaths = config.gemPaths
+            if (gemPaths) {
+                paths.addAll(gemPaths)
+            }
+        }
+        paths.size() ? paths.join(System.getProperty('path.separator')) : null
     }
 
     static Map<String, Object> getConvertOptions() {
