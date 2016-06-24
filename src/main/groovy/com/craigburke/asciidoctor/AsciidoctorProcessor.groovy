@@ -17,7 +17,7 @@ class AsciidoctorProcessor extends AbstractProcessor {
 
     AsciidoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
-        asciidoctor = create()
+        asciidoctor = create(gemPath)
         if (config.requires) {
             asciidoctor.requireLibraries(config.requires as List<String>)
         }
@@ -36,6 +36,12 @@ class AsciidoctorProcessor extends AbstractProcessor {
 
     static Map getConfig() {
         (AssetPipelineConfigHolder.config?.asciidoctor ?: [:]).asImmutable()
+    }
+
+    static String getGemPath() {
+        List<String> pathList = config.gemPath ? [config.gemPath] : config.gemPaths
+        String pathSeparator = System.getProperty('path.separator')
+        pathList ? pathList.join(pathSeparator) : null
     }
 
     static Map<String, Object> getConvertOptions() {
