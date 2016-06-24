@@ -18,7 +18,9 @@ class AsciidoctorProcessor extends AbstractProcessor {
     AsciidoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
         asciidoctor = create()
-        asciidoctor.requireLibrary('asciidoctor-diagram')
+        if (config.requires) {
+            asciidoctor.requireLibraries(config.requires as List<String>)
+        }
         JavaExtensionRegistry extensionRegistry = asciidoctor.javaExtensionRegistry()
         extensionRegistry.includeProcessor(AssetPipelineIncludeProcessor)
     }
@@ -37,7 +39,7 @@ class AsciidoctorProcessor extends AbstractProcessor {
     }
 
     static Map<String, Object> getConvertOptions() {
-        Map options = config.collectEntries { key, val ->
+        Map options = config.collectEntries { String key, val ->
             [(key.replaceAll(/[A-Z]/) { '_' + it[0].toLowerCase() }): val]
         }
         if (options.containsKey('embeddable')) {
