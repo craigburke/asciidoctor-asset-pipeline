@@ -17,7 +17,7 @@ class AsciiDoctorProcessor extends AbstractProcessor {
     AsciiDoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
         asciidoctor = create()
-        asciidoctor.requireLibrary('asciidoctor-diagram')
+        asciidoctor.requireLibraries(getConfig().requires)
         JavaExtensionRegistry extensionRegistry = asciidoctor.javaExtensionRegistry()
         extensionRegistry.includeProcessor(AssetPipelineIncludeProcessor)
     }
