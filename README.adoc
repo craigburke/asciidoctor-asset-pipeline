@@ -42,8 +42,8 @@ In your *build.gradle* you can set the conversion options settings. See: https:/
 assets {
     configOptions = [
         asciidoctor : [
-            header_footer: true,
-            template_dirs: [ '/my/path/templates/' ],
+            headerFooter: true,
+            templateDirs: [ '/my/path/templates/' ],
             attributes: [ icons: 'fonts' ]
         ]
     ]
