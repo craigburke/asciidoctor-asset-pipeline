@@ -1,6 +1,6 @@
 package com.craigburke.asciidoctor
 
-import asset.pipeline.AssetPipelineConfigHolder
+import static  com.craigburke.asciidoctor.AsciidoctorUtil.*
 import org.asciidoctor.extension.JavaExtensionRegistry
 
 import static org.asciidoctor.Asciidoctor.Factory.create
@@ -8,67 +8,42 @@ import asset.pipeline.AbstractProcessor
 import asset.pipeline.AssetCompiler
 import asset.pipeline.AssetFile
 import org.asciidoctor.Asciidoctor
-import org.asciidoctor.SafeMode
 
 class AsciidoctorProcessor extends AbstractProcessor {
 
     private Asciidoctor asciidoctor
-    private static ThreadLocal currentAsset = new ThreadLocal()
 
     AsciidoctorProcessor(AssetCompiler precompiler) {
         super(precompiler)
+        setupAsciidoctor()
+        loadProcessors()
+    }
+
+    private void setupAsciidoctor() {
         String gemPath = getGemPath()
         asciidoctor = gemPath ? create(gemPath) : create()
-        if (config.requires) {
-            asciidoctor.requireLibraries(config.requires as List<String>)
+        if (assetPipelineConfig.requires) {
+            asciidoctor.requireLibraries(assetPipelineConfig.requires as List<String>)
         }
+    }
+
+    private void loadProcessors() {
         JavaExtensionRegistry extensionRegistry = asciidoctor.javaExtensionRegistry()
         extensionRegistry.includeProcessor(AssetPipelineIncludeProcessor)
+        extensionRegistry.docinfoProcessor(AssetPipelineDocinfoProcessor)
+
+        AssetPipelineDocinfoProcessor footerProcessor = new AssetPipelineDocinfoProcessor([location: ':footer'])
+        extensionRegistry.docinfoProcessor(footerProcessor)
     }
 
     String process(String input, AssetFile assetFile) {
-        currentAsset.set(assetFile.path)
+        currentDocumentPath = assetFile.path
         asciidoctor.convert(input, convertOptions)
     }
 
-    static String getCurrentAssetPath() {
-        currentAsset.get().toString()
-    }
-
-    static Map getConfig() {
-        (AssetPipelineConfigHolder.config?.asciidoctor ?: [:]).asImmutable()
-    }
-
     static String getGemPath() {
-        List<String> pathList = config.gemPath ? [config.gemPath] : config.gemPaths
+        List<String> pathList = assetPipelineConfig.gemPath ? [assetPipelineConfig.gemPath] : assetPipelineConfig.gemPaths
         String pathSeparator = System.getProperty('path.separator')
         pathList ? pathList.join(pathSeparator) : null
-    }
-
-    static Map<String, Object> getConvertOptions() {
-        Map options = config.collectEntries { String key, val ->
-            [(key.replaceAll(/[A-Z]/) { '_' + it[0].toLowerCase() }): val]
-        }
-        if (options.containsKey('embeddable')) {
-            options.header_footer = !options.remove('embeddable')
-        }
-        else if (!options.containsKey('header_footer')) {
-            options.header_footer = true
-        }
-        options.safe = resolveSafeModeLevel(options.safe)
-        options.asImmutable()
-    }
-
-    static int resolveSafeModeLevel(Object safe) {
-        if (safe == null) 0
-        else if (safe instanceof Integer) safe
-        else {
-            try {
-                Enum.valueOf(SafeMode, safe.toString().toUpperCase()).level
-            }
-            catch (IllegalArgumentException e) {
-                0
-            }
-        }
     }
 }

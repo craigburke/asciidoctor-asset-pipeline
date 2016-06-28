@@ -1,8 +1,5 @@
 package com.craigburke.asciidoctor
 
-import asset.pipeline.AssetFile
-import asset.pipeline.AssetHelper
-import asset.pipeline.CacheManager
 import org.asciidoctor.ast.DocumentRuby
 import org.asciidoctor.extension.IncludeProcessor
 import org.asciidoctor.extension.PreprocessorReader
@@ -18,11 +15,8 @@ class AssetPipelineIncludeProcessor extends IncludeProcessor {
 
     @Override
     void process(DocumentRuby document, PreprocessorReader reader, String target, Map<String, Object> attributes) {
-        String sourceFile = AsciidoctorProcessor.currentAssetPath
-        AssetFile includeFile = AssetHelper.fileForUri(target)
-        if (includeFile) {
-            CacheManager.addCacheDependency(sourceFile, includeFile)
-            String content = includeFile?.inputStream?.text ?: ''
+        String content = AsciidoctorUtil.loadAndCacheFile(target)
+        if (content) {
             reader.push_include(preprocess(content, attributes), target, target, 1, attributes)
         }
     }
