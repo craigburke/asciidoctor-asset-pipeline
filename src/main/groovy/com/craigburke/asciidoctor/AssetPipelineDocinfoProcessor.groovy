@@ -20,13 +20,14 @@ class AssetPipelineDocinfoProcessor extends DocinfoProcessor {
 
         List<String> filesToCheck = []
 
-        if (convertOptions.docinfo || convertOptions.docinfo2) {
+        if (convertOptions.header_footer || convertOptions.docinfo || convertOptions.docinfo2) {
             String documentFileName = currentDocumentPath.tokenize('/').last()
             String filePrefix = documentFileName - ".${documentFileName.tokenize('.').last()}"
 
             filesToCheck << "/${filePrefix}-${fileName}"
         }
-        else if (convertOptions.docinfo1 || convertOptions.docinfo2) {
+
+        if (convertOptions.header_footer || convertOptions.docinfo1 || convertOptions.docinfo2) {
             filesToCheck << "/${fileName}"
         }
 
