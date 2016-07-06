@@ -1,14 +1,19 @@
 package com.craigburke.asciidoctor
 
-import static  com.craigburke.asciidoctor.AsciidoctorUtil.*
-import org.asciidoctor.extension.JavaExtensionRegistry
-
 import static org.asciidoctor.Asciidoctor.Factory.create
+
+import groovy.transform.CompileStatic
+import org.asciidoctor.extension.JavaExtensionRegistry
 import asset.pipeline.AbstractProcessor
 import asset.pipeline.AssetCompiler
 import asset.pipeline.AssetFile
 import org.asciidoctor.Asciidoctor
 
+/**
+ * Asciidoctor processor for Asciidoctor asset files
+ * @author Craig Burke
+ */
+@CompileStatic
 class AsciidoctorProcessor extends AbstractProcessor {
 
     private Asciidoctor asciidoctor
@@ -20,10 +25,9 @@ class AsciidoctorProcessor extends AbstractProcessor {
     }
 
     private void setupAsciidoctor() {
-        String gemPath = getGemPath()
         asciidoctor = gemPath ? create(gemPath) : create()
-        if (assetPipelineConfig.requires) {
-            asciidoctor.requireLibraries(assetPipelineConfig.requires as List<String>)
+        if (AsciidoctorUtil.assetPipelineConfig.requires) {
+            asciidoctor.requireLibraries(AsciidoctorUtil.assetPipelineConfig.requires as List<String>)
         }
     }
 
@@ -37,12 +41,15 @@ class AsciidoctorProcessor extends AbstractProcessor {
     }
 
     String process(String input, AssetFile assetFile) {
-        currentDocumentPath = assetFile.path
-        asciidoctor.convert(input, convertOptions)
+        AsciidoctorUtil.currentDocumentPath = assetFile.path
+        asciidoctor.convert(input, AsciidoctorUtil.config)
     }
 
     static String getGemPath() {
-        List<String> pathList = assetPipelineConfig.gemPath ? [assetPipelineConfig.gemPath] : assetPipelineConfig.gemPaths
+        List<String> pathList = AsciidoctorUtil.assetPipelineConfig.gemPath ?
+                [AsciidoctorUtil.assetPipelineConfig.gemPath as String] :
+                AsciidoctorUtil.assetPipelineConfig.gemPaths as List<String>
+
         String pathSeparator = System.getProperty('path.separator')
         pathList ? pathList.join(pathSeparator) : null
     }

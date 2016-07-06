@@ -1,42 +1,49 @@
 package com.craigburke.asciidoctor
 
-import static com.craigburke.asciidoctor.AsciidoctorUtil.*
+import groovy.transform.CompileStatic
+import org.jruby.RubyBasicObject
 import org.asciidoctor.ast.Document
 import org.asciidoctor.extension.DocinfoProcessor
 
+/**
+ * Docinfo processor for the Asset Pipeline
+ * @author Craig Burke
+ */
+@CompileStatic
 class AssetPipelineDocinfoProcessor extends DocinfoProcessor {
 
     AssetPipelineDocinfoProcessor() {
         super()
     }
 
-    AssetPipelineDocinfoProcessor(Map<String, Object> config) {
-        super(config)
+    AssetPipelineDocinfoProcessor(Map config) {
+        super(config as Map<String, Object>)
     }
 
     @Override
     String process(Document document) {
-        String fileName = processorConfig.location == 'footer' ? 'docinfo-footer.html' : 'docinfo.html'
+        String fileName = processorConfig?.location == 'footer' ? 'docinfo-footer.html' : 'docinfo.html'
 
         List<String> filesToCheck = []
 
-        if (convertOptions.header_footer || convertOptions.docinfo || convertOptions.docinfo2) {
-            String documentFileName = currentDocumentPath.tokenize('/').last()
+        if (config.header_footer || config.docinfo || config.docinfo2) {
+            String documentFileName = AsciidoctorUtil.currentDocumentPath.tokenize('/').last()
             String filePrefix = documentFileName - ".${documentFileName.tokenize('.').last()}"
 
-            filesToCheck << "/${filePrefix}-${fileName}"
+            filesToCheck << ("/${filePrefix}-${fileName}" as String)
         }
 
-        if (convertOptions.header_footer || convertOptions.docinfo1 || convertOptions.docinfo2) {
-            filesToCheck << "/${fileName}"
+        if (config.header_footer || config.docinfo1 || config.docinfo2) {
+            filesToCheck << ("/${fileName}" as String)
         }
 
-        filesToCheck.findResult { String file -> loadAndCacheFile(file) }
+        filesToCheck.findResult { String file -> AsciidoctorUtil.loadAndCacheFile(file) }
     }
 
     Map<String, String> getProcessorConfig() {
-        config.collectEntries {
-            [it.key.toString(), it.value.asJavaString()]
+        config.collectEntries { Object key, Object value ->
+            String valueAsString = ((RubyBasicObject)value).asJavaString()
+            [(key.toString()), valueAsString]
         } as Map<String, String>
     }
 

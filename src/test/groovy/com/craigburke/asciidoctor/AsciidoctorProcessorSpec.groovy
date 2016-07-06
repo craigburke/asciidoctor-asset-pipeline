@@ -1,17 +1,15 @@
 package com.craigburke.asciidoctor
 
 import asset.pipeline.AssetFile
-import asset.pipeline.AssetPipelineConfigHolder
 import asset.pipeline.GenericAssetFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import spock.lang.Shared
-import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Unroll
 
-class AsciidoctorProcessorSpec extends Specification {
+class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
 
     @Shared
     AssetFile assetFile = new GenericAssetFile()
@@ -19,13 +17,9 @@ class AsciidoctorProcessorSpec extends Specification {
     @Subject
     AsciidoctorProcessor processor = new AsciidoctorProcessor(null)
 
-    def setup() {
-        asciidoctorConfig = [:]
-    }
-
     def "Document doesn't render body element when embeddable is true"() {
         setup:
-        asciidoctorConfig = [embeddable: true]
+        assetPipelineConfig = [embeddable: true]
 
         when:
         String result = convertToHtml(input)
@@ -35,11 +29,10 @@ class AsciidoctorProcessorSpec extends Specification {
 
         where:
         input = '''\
-        = Heading
-        
-        Lorem ipsum.'''.stripIndent()
+        |= Heading
+        |
+        |Lorem ipsum.'''.stripMargin()
     }
-
 
     def "Document renders body element when embeddable is false"() {
         when:
@@ -55,16 +48,15 @@ class AsciidoctorProcessorSpec extends Specification {
 
         where:
         input = '''\
-        = Heading
-        :!stylesheet:
-
-        Lorem ipsum.'''.stripIndent()
+        |= Heading
+        |:!stylesheet:
+        |
+        |Lorem ipsum.'''.stripMargin()
     }
-
 
     def "Sets safe mode specified by name"() {
         setup:
-        asciidoctorConfig = [safe: 'server']
+        assetPipelineConfig = [safe: 'server']
 
         when:
         String result = convertToHtml(input)
@@ -76,7 +68,6 @@ class AsciidoctorProcessorSpec extends Specification {
         where:
         input = '{safe-mode-name}'
     }
-
 
     @Unroll
     def "Document renders subheadings correctly"() {
@@ -122,8 +113,6 @@ class AsciidoctorProcessorSpec extends Specification {
         label = "${url}${text ? ' labeled ' + text : ''}"
     }
 
-
-
     def "Renders unordered lists correctly"() {
         when:
         String result = convertToHtml(input)
@@ -135,29 +124,30 @@ class AsciidoctorProcessorSpec extends Specification {
 
         Element item1Sublist = item1.select('ul').first()
         Element item2Sublist = item2.select('ul').first()
-        Element item2_1Sublist = item2Sublist.select('ul').last()
+
+        Element item21Sublist = item2Sublist.select('ul').last()
 
         then:
-        item1.tagName() == "li"
-        item2.tagName() == "li"
+        item1.tagName() == 'li'
+        item2.tagName() == 'li'
 
         and:
         list.children().size() == 2
 
         and:
-        item1.text().startsWith "Item 1"
+        item1.text().startsWith 'Item 1'
 
         and:
-        item1Sublist.text() == "Item 1.1"
+        item1Sublist.text() == 'Item 1.1'
 
         and:
-        item2Sublist.text().startsWith "Item 2"
+        item2Sublist.text().startsWith 'Item 2'
 
         and:
-        item2_1Sublist.text().startsWith "Item 2.1"
+        item21Sublist.text().startsWith 'Item 2.1'
 
         and:
-        item2_1Sublist.child(0).text() == "Item 2.1.1"
+        item21Sublist.child(0).text() == 'Item 2.1.1'
 
         where:
         input = '''\
@@ -179,29 +169,29 @@ class AsciidoctorProcessorSpec extends Specification {
 
         Element item1Sublist = item1.select('ol').first()
         Element item2Sublist = item2.select('ol').first()
-        Element item2_1Sublist = item2Sublist.select('ol').last()
+        Element item21Sublist = item2Sublist.select('ol').last()
 
         then:
-        item1.tagName() == "li"
-        item2.tagName() == "li"
+        item1.tagName() == 'li'
+        item2.tagName() == 'li'
 
         and:
         list.children().size() == 2
 
         and:
-        item1.text().startsWith "Item 1"
+        item1.text().startsWith 'Item 1'
 
         and:
-        item1Sublist.text() == "Item 1.1"
+        item1Sublist.text() == 'Item 1.1'
 
         and:
-        item2Sublist.text().startsWith "Item 2"
+        item2Sublist.text().startsWith 'Item 2'
 
         and:
-        item2_1Sublist.text().startsWith "Item 2.1"
+        item21Sublist.text().startsWith 'Item 2.1'
 
         and:
-        item2_1Sublist.child(0).text() == "Item 2.1.1"
+        item21Sublist.child(0).text() == 'Item 2.1.1'
 
         where:
         input = '''\
@@ -246,10 +236,5 @@ class AsciidoctorProcessorSpec extends Specification {
     private String convertToHtml(String input) {
         processor.process(input, assetFile)
     }
-
-    private setAsciidoctorConfig(Map config) {
-        AssetPipelineConfigHolder.config['asciidoctor'] = config
-    }
-
 
 }
