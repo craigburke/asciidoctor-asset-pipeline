@@ -1,28 +1,18 @@
 package com.craigburke.asciidoctor
 
-import asset.pipeline.AssetFile
-import asset.pipeline.GenericAssetFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import spock.lang.Shared
-import spock.lang.Subject
 import spock.lang.Unroll
 
 class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
-
-    @Shared
-    AssetFile assetFile = new GenericAssetFile()
-
-    @Subject
-    AsciidoctorProcessor processor = new AsciidoctorProcessor(null)
 
     def "Document doesn't render body element when embeddable is true"() {
         setup:
         assetPipelineConfig = [embeddable: true]
 
         when:
-        String result = convertToHtml(input)
+        String result = processAsciidoc(input)
 
         then:
         result.startsWith('<div class="paragraph">')
@@ -36,7 +26,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
 
     def "Document renders body element when embeddable is false"() {
         when:
-        String result = convertToHtml(input)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         then:
@@ -59,7 +49,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
         assetPipelineConfig = [safe: 'server']
 
         when:
-        String result = convertToHtml(input)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         then:
@@ -72,7 +62,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
     @Unroll
     def "Document renders subheadings correctly"() {
         when:
-        String result = convertToHtml(input)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         Element header = document.select(selector).first()
@@ -91,7 +81,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
     @Unroll
     def "Document renders link #label correctly"() {
         when:
-        String result = convertToHtml(input)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         Element link = document.select('a').first()
@@ -115,7 +105,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
 
     def "Renders unordered lists correctly"() {
         when:
-        String result = convertToHtml(input)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         Element list = document.select('body div.ulist > ul').first()
@@ -160,7 +150,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
 
     def "Renders ordered lists correctly"() {
         when:
-        String result = processor.process(input, assetFile)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         Element list = document.select('body div.olist > ol').first()
@@ -204,7 +194,7 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
 
     def "Renders tables correctly"() {
         when:
-        String result = processor.process(input, assetFile)
+        String result = processAsciidoc(input)
         Document document = Jsoup.parseBodyFragment(result)
 
         Element table = document.select('body table').first()
@@ -231,10 +221,6 @@ class AsciidoctorProcessorSpec extends AsciidoctorBaseSpec {
         | COL1-2 | COL2-2
         | COL1-3 | COL2-3
         |==='''.stripIndent()
-    }
-
-    private String convertToHtml(String input) {
-        processor.process(input, assetFile)
     }
 
 }

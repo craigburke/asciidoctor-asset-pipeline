@@ -36,17 +36,18 @@ class AssetPipelineIncludeProcessor extends IncludeProcessor {
 
             tagList.tokenize(';').each { String tag ->
                 int startTagIndex = lines.findIndexOf { String line -> line.contains("tag::${tag}[]") }
-                if (startTagIndex > -1) {
-                    int endTagIndex = lines.findIndexOf { String line -> line.contains("end::${tag}[]") }
+                int endTagIndex = lines.findIndexOf { String line -> line.contains("end::${tag}[]") }
 
-                    if (endTagIndex == -1) {
-                        throw new RuntimeException("No closing tag [${tag}] found in document!")
-                    }
-
-                    sb = sb.append(lines[(startTagIndex + 1)..(endTagIndex - 1)].join('\n'))
-                } else {
+                if (startTagIndex == -1) {
                     throw new RuntimeException("Tag [${tag}] not found in document!")
                 }
+                if (endTagIndex == -1) {
+                    throw new RuntimeException("No closing tag [${tag}] found in document!")
+                }
+
+                sb.append(System.lineSeparator())
+                List<String> taggedLines = lines[(startTagIndex + 1)..(endTagIndex - 1)]
+                sb.append(taggedLines.join(System.lineSeparator()))
             }
 
             sb.toString()

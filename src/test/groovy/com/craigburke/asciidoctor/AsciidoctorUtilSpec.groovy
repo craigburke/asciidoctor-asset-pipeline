@@ -45,6 +45,7 @@ class AsciidoctorUtilSpec extends AsciidoctorBaseSpec {
         10       | 10
         20       | 20
         99       | 99
+        'foo'    | 0
     }
 
     @Unroll
@@ -99,6 +100,19 @@ class AsciidoctorUtilSpec extends AsciidoctorBaseSpec {
 
         and:
         AsciidoctorUtil.config.attributes.outdir == asciidocRoot
+    }
+
+    @Unroll
+    def "The #attribute attribute can be overridden"() {
+        when:
+        Map attributes = [(attribute): 'FOOBAR']
+        assetPipelineConfig = [attributes: attributes]
+
+        then:
+        AsciidoctorUtil.config.attributes[attribute] == 'FOOBAR'
+
+        where:
+        attribute << ['base_dir', 'docdir', 'imagesdir', 'outdir']
     }
 
 }

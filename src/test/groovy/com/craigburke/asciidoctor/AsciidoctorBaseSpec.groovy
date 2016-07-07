@@ -1,19 +1,24 @@
 package com.craigburke.asciidoctor
 
 import asset.pipeline.AssetPipelineConfigHolder
+import asset.pipeline.GenericAssetFile
 import asset.pipeline.fs.FileSystemAssetResolver
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class AsciidoctorBaseSpec extends Specification {
 
-    @Rule TemporaryFolder assetFolder
+    private String assetRoot
 
     def setup() {
+        assetRoot = AsciidoctorBaseSpec.classLoader.getResource('assets').path
         assetPipelineConfig = [:]
         FileSystemAssetResolver appResolver = new FileSystemAssetResolver('application', assetRoot)
         AssetPipelineConfigHolder.resolvers = [appResolver]
+    }
+
+    protected static processAsciidoc(String input) {
+        AsciidoctorProcessor processor = new AsciidoctorProcessor(null)
+        processor.process(input, new GenericAssetFile())
     }
 
     protected static setAssetPipelineConfig(Map config) {
@@ -21,7 +26,7 @@ class AsciidoctorBaseSpec extends Specification {
     }
 
     protected String getAssetRoot() {
-        assetFolder.root.absolutePath
+        assetRoot
     }
 
     protected String getAsciidocRoot() {
